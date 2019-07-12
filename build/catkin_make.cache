@@ -1,0 +1,2 @@
+go_player
+-DCATKIN_DEVEL_PREFIX=/home/mrobot/ros_chess_svm/devel -DCMAKE_INSTALL_PREFIX=/home/mrobot/ros_chess_svm/install -G Unix Makefiles

@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/mrobot/ros_chess_svm/install/setup.sh

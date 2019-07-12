@@ -1,0 +1,8 @@
+prefix=/home/mrobot/ros_chess_svm/install
+
+Name: go_player
+Description: Description of go_player
+Version: 0.0.0
+Cflags: -I/home/mrobot/ros_chess_svm/install/include
+Libs: -L/home/mrobot/ros_chess_svm/install/lib 
+Requires: message_runtime

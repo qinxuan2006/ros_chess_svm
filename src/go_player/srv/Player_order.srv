@@ -1,0 +1,8 @@
+# input
+string state
+string kind
+string level
+---
+# output
+bool success
+int8[] step
