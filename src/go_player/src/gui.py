@@ -11,8 +11,8 @@ def go_client_srv(m,p,n):
     try:  
         go_client = rospy.ServiceProxy("/go/command",Player_order)       
         resp = go_client(m,p,n) 
-        print resp.step
-        return resp.step
+        print resp.success, resp.do_step, resp.remove_step, resp.win_side
+        return resp.do_step
     except rospy.ServiceException, e:  
         print "Service call failed: %s"%e  
  
@@ -20,6 +20,6 @@ def go_client_srv(m,p,n):
 if __name__=="__main__":  
     rospy.init_node('go_gui')
     rospy.loginfo('started')
-    pc_step = go_client_srv("play","black","6")  
+    pc_step = go_client_srv("new","black","6")  
 
 

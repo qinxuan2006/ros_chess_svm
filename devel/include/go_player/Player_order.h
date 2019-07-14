@@ -40,7 +40,7 @@ template<>
 struct MD5Sum< ::go_player::Player_order > {
   static const char* value()
   {
-    return "1e0b8396f26d47b0b616e36d5b4d6a67";
+    return "8b5ce4bcaa3e0d90fdecb196f6925e60";
   }
 
   static const char* value(const ::go_player::Player_order&) { return value(); }

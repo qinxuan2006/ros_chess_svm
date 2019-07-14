@@ -80,7 +80,8 @@ class GTPFacade(object):
 
 
     def final_score(self):
-        self.gtp_subprocess.send("final_score\n")
+        result = self.gtp_subprocess.send("final_score\n")
+        return result[2]
 
     def close(self):
         self.gtp_subprocess.close()
@@ -110,9 +111,9 @@ class play_ai(object):
             vertex = self.ai.genmove(BLACK)
             if vertex == PASS:
                 if first_pass:
-                    self.ai.final_score()
+                    win = self.ai.final_score()
                     self.ai.close()
-                    return (-1,-1),0
+                    return (-1,-1),win
                 else:
                     first_pass = True
             else:
@@ -122,16 +123,16 @@ class play_ai(object):
         elif self.side == "white":
             if play_step == (-1,-1):
                 self.ai.clear_board()
-                vertex = (-1,-1)
+                vertex = (0,0)
             else:
                 self.ai.play(BLACK, real_step)
                 self.ai.showboard()
                 vertex = self.ai.genmove(WHITE)
             if vertex == PASS:
                 if first_pass:
-                    self.ai.final_score()
+                    win = self.ai.final_score()
                     self.ai.close()
-                    return (-1,-1),0
+                    return (-1,-1),win
                 else:
                     first_pass = True
             else:

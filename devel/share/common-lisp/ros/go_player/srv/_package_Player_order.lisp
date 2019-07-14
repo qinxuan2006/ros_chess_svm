@@ -7,6 +7,10 @@
           LEVEL
           SUCCESS-VAL
           SUCCESS
-          STEP-VAL
-          STEP
+          DO_STEP-VAL
+          DO_STEP
+          REMOVE_STEP-VAL
+          REMOVE_STEP
+          WIN_SIDE-VAL
+          WIN_SIDE
 ))

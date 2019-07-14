@@ -25,11 +25,15 @@ struct Player_orderResponse_
 
   Player_orderResponse_()
     : success(false)
-    , step()  {
+    , do_step()
+    , remove_step()
+    , win_side()  {
     }
   Player_orderResponse_(const ContainerAllocator& _alloc)
     : success(false)
-    , step(_alloc)  {
+    , do_step(_alloc)
+    , remove_step(_alloc)
+    , win_side(_alloc)  {
   (void)_alloc;
     }
 
@@ -38,8 +42,14 @@ struct Player_orderResponse_
    typedef uint8_t _success_type;
   _success_type success;
 
-   typedef std::vector<int8_t, typename ContainerAllocator::template rebind<int8_t>::other >  _step_type;
-  _step_type step;
+   typedef std::vector<int8_t, typename ContainerAllocator::template rebind<int8_t>::other >  _do_step_type;
+  _do_step_type do_step;
+
+   typedef std::vector<int8_t, typename ContainerAllocator::template rebind<int8_t>::other >  _remove_step_type;
+  _remove_step_type remove_step;
+
+   typedef std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other >  _win_side_type;
+  _win_side_type win_side;
 
 
 
@@ -119,12 +129,12 @@ struct MD5Sum< ::go_player::Player_orderResponse_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "4386e1c0ee0164cbde602d58249d27dc";
+    return "32759e1a82e311157548dde213cf81e2";
   }
 
   static const char* value(const ::go_player::Player_orderResponse_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x4386e1c0ee0164cbULL;
-  static const uint64_t static_value2 = 0xde602d58249d27dcULL;
+  static const uint64_t static_value1 = 0x32759e1a82e31115ULL;
+  static const uint64_t static_value2 = 0x7548dde213cf81e2ULL;
 };
 
 template<class ContainerAllocator>
@@ -145,7 +155,9 @@ struct Definition< ::go_player::Player_orderResponse_<ContainerAllocator> >
   {
     return "\n\
 bool success\n\
-int8[] step\n\
+int8[] do_step\n\
+int8[] remove_step\n\
+string win_side\n\
 \n\
 ";
   }
@@ -166,7 +178,9 @@ namespace serialization
     template<typename Stream, typename T> inline static void allInOne(Stream& stream, T m)
     {
       stream.next(m.success);
-      stream.next(m.step);
+      stream.next(m.do_step);
+      stream.next(m.remove_step);
+      stream.next(m.win_side);
     }
 
     ROS_DECLARE_ALLINONE_SERIALIZER
@@ -187,12 +201,20 @@ struct Printer< ::go_player::Player_orderResponse_<ContainerAllocator> >
   {
     s << indent << "success: ";
     Printer<uint8_t>::stream(s, indent + "  ", v.success);
-    s << indent << "step[]" << std::endl;
-    for (size_t i = 0; i < v.step.size(); ++i)
+    s << indent << "do_step[]" << std::endl;
+    for (size_t i = 0; i < v.do_step.size(); ++i)
     {
-      s << indent << "  step[" << i << "]: ";
-      Printer<int8_t>::stream(s, indent + "  ", v.step[i]);
+      s << indent << "  do_step[" << i << "]: ";
+      Printer<int8_t>::stream(s, indent + "  ", v.do_step[i]);
     }
+    s << indent << "remove_step[]" << std::endl;
+    for (size_t i = 0; i < v.remove_step.size(); ++i)
+    {
+      s << indent << "  remove_step[" << i << "]: ";
+      Printer<int8_t>::stream(s, indent + "  ", v.remove_step[i]);
+    }
+    s << indent << "win_side: ";
+    Printer<std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other > >::stream(s, indent + "  ", v.win_side);
   }
 };
 

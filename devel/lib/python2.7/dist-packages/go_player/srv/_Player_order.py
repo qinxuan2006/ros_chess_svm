@@ -198,16 +198,18 @@ import struct
 
 
 class Player_orderResponse(genpy.Message):
-  _md5sum = "4386e1c0ee0164cbde602d58249d27dc"
+  _md5sum = "32759e1a82e311157548dde213cf81e2"
   _type = "go_player/Player_orderResponse"
   _has_header = False #flag to mark the presence of a Header object
   _full_text = """
 bool success
-int8[] step
+int8[] do_step
+int8[] remove_step
+string win_side
 
 """
-  __slots__ = ['success','step']
-  _slot_types = ['bool','int8[]']
+  __slots__ = ['success','do_step','remove_step','win_side']
+  _slot_types = ['bool','int8[]','int8[]','string']
 
   def __init__(self, *args, **kwds):
     """
@@ -217,7 +219,7 @@ int8[] step
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       success,step
+       success,do_step,remove_step,win_side
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -228,11 +230,17 @@ int8[] step
       #message fields cannot be None, assign default values for those that are
       if self.success is None:
         self.success = False
-      if self.step is None:
-        self.step = []
+      if self.do_step is None:
+        self.do_step = []
+      if self.remove_step is None:
+        self.remove_step = []
+      if self.win_side is None:
+        self.win_side = ''
     else:
       self.success = False
-      self.step = []
+      self.do_step = []
+      self.remove_step = []
+      self.win_side = ''
 
   def _get_types(self):
     """
@@ -247,10 +255,20 @@ int8[] step
     """
     try:
       buff.write(_get_struct_B().pack(self.success))
-      length = len(self.step)
+      length = len(self.do_step)
       buff.write(_struct_I.pack(length))
       pattern = '<%sb'%length
-      buff.write(struct.pack(pattern, *self.step))
+      buff.write(struct.pack(pattern, *self.do_step))
+      length = len(self.remove_step)
+      buff.write(_struct_I.pack(length))
+      pattern = '<%sb'%length
+      buff.write(struct.pack(pattern, *self.remove_step))
+      _x = self.win_side
+      length = len(_x)
+      if python3 or type(_x) == unicode:
+        _x = _x.encode('utf-8')
+        length = len(_x)
+      buff.write(struct.pack('<I%ss'%length, length, _x))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -271,7 +289,23 @@ int8[] step
       pattern = '<%sb'%length
       start = end
       end += struct.calcsize(pattern)
-      self.step = struct.unpack(pattern, str[start:end])
+      self.do_step = struct.unpack(pattern, str[start:end])
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      pattern = '<%sb'%length
+      start = end
+      end += struct.calcsize(pattern)
+      self.remove_step = struct.unpack(pattern, str[start:end])
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      start = end
+      end += length
+      if python3:
+        self.win_side = str[start:end].decode('utf-8')
+      else:
+        self.win_side = str[start:end]
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -285,10 +319,20 @@ int8[] step
     """
     try:
       buff.write(_get_struct_B().pack(self.success))
-      length = len(self.step)
+      length = len(self.do_step)
       buff.write(_struct_I.pack(length))
       pattern = '<%sb'%length
-      buff.write(self.step.tostring())
+      buff.write(self.do_step.tostring())
+      length = len(self.remove_step)
+      buff.write(_struct_I.pack(length))
+      pattern = '<%sb'%length
+      buff.write(self.remove_step.tostring())
+      _x = self.win_side
+      length = len(_x)
+      if python3 or type(_x) == unicode:
+        _x = _x.encode('utf-8')
+        length = len(_x)
+      buff.write(struct.pack('<I%ss'%length, length, _x))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -310,7 +354,23 @@ int8[] step
       pattern = '<%sb'%length
       start = end
       end += struct.calcsize(pattern)
-      self.step = numpy.frombuffer(str[start:end], dtype=numpy.int8, count=length)
+      self.do_step = numpy.frombuffer(str[start:end], dtype=numpy.int8, count=length)
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      pattern = '<%sb'%length
+      start = end
+      end += struct.calcsize(pattern)
+      self.remove_step = numpy.frombuffer(str[start:end], dtype=numpy.int8, count=length)
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      start = end
+      end += length
+      if python3:
+        self.win_side = str[start:end].decode('utf-8')
+      else:
+        self.win_side = str[start:end]
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -327,6 +387,6 @@ def _get_struct_B():
     return _struct_B
 class Player_order(object):
   _type          = 'go_player/Player_order'
-  _md5sum = '1e0b8396f26d47b0b616e36d5b4d6a67'
+  _md5sum = '8b5ce4bcaa3e0d90fdecb196f6925e60'
   _request_class  = Player_orderRequest
   _response_class = Player_orderResponse

@@ -5,4 +5,6 @@ string level
 ---
 # output
 bool success
-int8[] step
+int8[] do_step
+int8[] remove_step
+string win_side

@@ -136,7 +136,9 @@ class Player_orderResponse {
     if (initObj === null) {
       // initObj === null is a special case for deserialization where we don't initialize fields
       this.success = null;
-      this.step = null;
+      this.do_step = null;
+      this.remove_step = null;
+      this.win_side = null;
     }
     else {
       if (initObj.hasOwnProperty('success')) {
@@ -145,11 +147,23 @@ class Player_orderResponse {
       else {
         this.success = false;
       }
-      if (initObj.hasOwnProperty('step')) {
-        this.step = initObj.step
+      if (initObj.hasOwnProperty('do_step')) {
+        this.do_step = initObj.do_step
       }
       else {
-        this.step = [];
+        this.do_step = [];
+      }
+      if (initObj.hasOwnProperty('remove_step')) {
+        this.remove_step = initObj.remove_step
+      }
+      else {
+        this.remove_step = [];
+      }
+      if (initObj.hasOwnProperty('win_side')) {
+        this.win_side = initObj.win_side
+      }
+      else {
+        this.win_side = '';
       }
     }
   }
@@ -158,8 +172,12 @@ class Player_orderResponse {
     // Serializes a message object of type Player_orderResponse
     // Serialize message field [success]
     bufferOffset = _serializer.bool(obj.success, buffer, bufferOffset);
-    // Serialize message field [step]
-    bufferOffset = _arraySerializer.int8(obj.step, buffer, bufferOffset, null);
+    // Serialize message field [do_step]
+    bufferOffset = _arraySerializer.int8(obj.do_step, buffer, bufferOffset, null);
+    // Serialize message field [remove_step]
+    bufferOffset = _arraySerializer.int8(obj.remove_step, buffer, bufferOffset, null);
+    // Serialize message field [win_side]
+    bufferOffset = _serializer.string(obj.win_side, buffer, bufferOffset);
     return bufferOffset;
   }
 
@@ -169,15 +187,21 @@ class Player_orderResponse {
     let data = new Player_orderResponse(null);
     // Deserialize message field [success]
     data.success = _deserializer.bool(buffer, bufferOffset);
-    // Deserialize message field [step]
-    data.step = _arrayDeserializer.int8(buffer, bufferOffset, null)
+    // Deserialize message field [do_step]
+    data.do_step = _arrayDeserializer.int8(buffer, bufferOffset, null)
+    // Deserialize message field [remove_step]
+    data.remove_step = _arrayDeserializer.int8(buffer, bufferOffset, null)
+    // Deserialize message field [win_side]
+    data.win_side = _deserializer.string(buffer, bufferOffset);
     return data;
   }
 
   static getMessageSize(object) {
     let length = 0;
-    length += object.step.length;
-    return length + 5;
+    length += object.do_step.length;
+    length += object.remove_step.length;
+    length += object.win_side.length;
+    return length + 13;
   }
 
   static datatype() {
@@ -187,7 +211,7 @@ class Player_orderResponse {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return '4386e1c0ee0164cbde602d58249d27dc';
+    return '32759e1a82e311157548dde213cf81e2';
   }
 
   static messageDefinition() {
@@ -195,7 +219,9 @@ class Player_orderResponse {
     return `
     
     bool success
-    int8[] step
+    int8[] do_step
+    int8[] remove_step
+    string win_side
     
     
     `;
@@ -214,11 +240,25 @@ class Player_orderResponse {
       resolved.success = false
     }
 
-    if (msg.step !== undefined) {
-      resolved.step = msg.step;
+    if (msg.do_step !== undefined) {
+      resolved.do_step = msg.do_step;
     }
     else {
-      resolved.step = []
+      resolved.do_step = []
+    }
+
+    if (msg.remove_step !== undefined) {
+      resolved.remove_step = msg.remove_step;
+    }
+    else {
+      resolved.remove_step = []
+    }
+
+    if (msg.win_side !== undefined) {
+      resolved.win_side = msg.win_side;
+    }
+    else {
+      resolved.win_side = ''
     }
 
     return resolved;
@@ -228,6 +268,6 @@ class Player_orderResponse {
 module.exports = {
   Request: Player_orderRequest,
   Response: Player_orderResponse,
-  md5sum() { return '1e0b8396f26d47b0b616e36d5b4d6a67'; },
+  md5sum() { return '8b5ce4bcaa3e0d90fdecb196f6925e60'; },
   datatype() { return 'go_player/Player_order'; }
 };
