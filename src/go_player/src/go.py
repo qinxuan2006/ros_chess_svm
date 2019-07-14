@@ -120,7 +120,7 @@ class CaptureAndProcess():
         isExcuted = False
         who = '--'
         ai_step = (-1,-1)
-        remove_step = (-1,-1)
+        remove_step = ()
 #        for i in range(0,10):
 #            ret, img = cap.read() 
 #            cv2.waitKey(10) 

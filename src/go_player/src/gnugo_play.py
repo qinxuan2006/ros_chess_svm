@@ -98,6 +98,7 @@ class play_ai(object):
         self.ai.clear_board()
         self.ai.komi(5.5)
         self.first_pass = False
+        print kind, level
 
     def gogogo(self,play_step):
         real_step = (play_step[0]+1,play_step[1]+1)
@@ -110,33 +111,30 @@ class play_ai(object):
                 self.ai.showboard()
             vertex = self.ai.genmove(BLACK)
             if vertex == PASS:
-                if first_pass:
+                if self.first_pass:
                     win = self.ai.final_score()
                     self.ai.close()
                     return (-1,-1),win
                 else:
-                    first_pass = True
-            else:
-                first_pass = False
+                    self.first_pass = True
             matrix = self.ai.showboard()
 
         elif self.side == "white":
             if play_step == (-1,-1):
                 self.ai.clear_board()
-                vertex = (0,0)
+                vertex = (0,0)    # (0,0) ->PASS, so need twice, but for white now, should jump first input
             else:
                 self.ai.play(BLACK, real_step)
                 self.ai.showboard()
                 vertex = self.ai.genmove(WHITE)
-            if vertex == PASS:
-                if first_pass:
-                    win = self.ai.final_score()
-                    self.ai.close()
-                    return (-1,-1),win
-                else:
-                    first_pass = True
-            else:
-                first_pass = False
+                if vertex == PASS:
+                    if self.first_pass:
+                        win = self.ai.final_score()
+                        self.ai.close()
+                        return (-1,-1),win
+                    else:
+                        self.first_pass = True
+
             matrix = self.ai.showboard()
 
         else:
