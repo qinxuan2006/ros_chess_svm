@@ -1,5 +1,5 @@
 #!/usr/bin/env python
- #-*-coding:GBK -*-
+#-*-coding:GBK -*-
 
 import os, sys
 import rospy
@@ -26,7 +26,6 @@ class pyGui(QtWidgets.QWidget):
         pkg_pth = rospack.get_path('go_player')
         ui_file = os.path.join(pkg_pth, 'src/pygui.ui')
         loadUi(ui_file, self)
-#        self.pub = rospy.Publisher("pygui_topic", String, queue_size=10)
         rospy.init_node('py_gui')
         self.is_pub = False
         self.current_level = self.level_slider.value()
@@ -40,11 +39,11 @@ class pyGui(QtWidgets.QWidget):
  
     def publish_start(self):
         if self.black_radio.isChecked():
-            self.kind = 'black'
-            self.hukind = 'white'
-        elif self.white_radio.isChecked():
-            self.kind = 'white'
             self.hukind = 'black'
+            self.kind = 'white'
+        elif self.white_radio.isChecked():
+            self.hukind = 'white'
+            self.kind = 'black'
         try:
             self.start_button.setEnabled(False)
             self.is_pub = True
