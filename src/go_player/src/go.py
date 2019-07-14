@@ -82,6 +82,7 @@ class CaptureAndProcess():
         self.model_color = joblib.load(pkg_pth + "/src/model/train_model_color.m") 
         self.board = np.zeros((19,19),np.uint8)
         self.bw = {'black':1,'white':2}
+        self.abw = {'black':-1,'white':-2}
         rospy.sleep(1) 
 
 
@@ -156,7 +157,7 @@ class CaptureAndProcess():
                     return Player_orderResponse(isExcuted, ai_step, remove_step, who) 
             else:
                 change_board = gnu_board-self.board
-                remove_step = np.argwhere(change_board < 0)
+                remove_step = np.argwhere(change_board == self.abw[self.kind])
                 self.board = gnu_board
 
             isExcuted = True        
