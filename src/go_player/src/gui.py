@@ -45,13 +45,14 @@ class pyGui(QtWidgets.QWidget):
             self.hukind = 'white'
             self.kind = 'black'
         try:
-            self.start_button.setEnabled(False)
-            self.is_pub = True
             self.isExcuted, self.pc_do_step, self.pc_remove_step, self.win_side = go_client_srv("new",self.kind,str(self.current_level))
             print self.isExcuted, self.pc_do_step,  self.pc_remove_step,self.win_side
+            self.start_button.setEnabled(False)
+            self.is_pub = True
         except Exception as e:
             res = QtWidgets.QMessageBox.warning(self,u'错误',u'请正先选择颜色及难度',QtWidgets.QMessageBox.Ok)
             print e
+
 
  
     def change_level(self, value):
