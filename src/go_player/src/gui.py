@@ -4,10 +4,16 @@
 import os, sys
 import rospy
 import rospkg
+import RPi.GPIO as GPIO
+import threading
 from std_msgs.msg import String
 from python_qt_binding import loadUi
 from PyQt5 import QtCore, QtGui, QtWidgets
-from go_player.srv import * 
+from go_player.srv import *
+
+threadLock = threading.Lock()
+
+
 
 def go_client_srv(m,p,n):  
     rospy.wait_for_service("/go/command")    
@@ -27,15 +33,24 @@ class pyGui(QtWidgets.QWidget):
         ui_file = os.path.join(pkg_pth, 'src/pygui.ui')
         loadUi(ui_file, self)
         rospy.init_node('py_gui')
+
+        self.wait_for_excute = False
+        pin = 11
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(pin,GPIO.IN)
+        GPIO.add_event_detect(pin,GPIO.FALLING,callback = self.player_go,bouncetime = 200)
+
         self.is_pub = False
         self.current_level = self.level_slider.value()
         self.level_label.setText(u'AI级别: ' + str(self.current_level))
         self.start_button.pressed.connect(self.publish_start)
         self.quit_button.pressed.connect(self.gui_close)
-        self.play_button.pressed.connect(self.play_go)
+        self.play_button.pressed.connect(self.robot_go)
         self.level_slider.valueChanged.connect(self.change_level)
         self.black_radio.clicked.connect(self.black_chosen)
         self.white_radio.clicked.connect(self.white_chosen)
+
+        
  
     def publish_start(self):
         if self.black_radio.isChecked():
@@ -52,8 +67,6 @@ class pyGui(QtWidgets.QWidget):
         except Exception as e:
             res = QtWidgets.QMessageBox.warning(self,u'错误',u'请正先选择颜色及难度',QtWidgets.QMessageBox.Ok)
             print e
-
-
  
     def change_level(self, value):
         self.current_level = value
@@ -64,16 +77,23 @@ class pyGui(QtWidgets.QWidget):
 
     def white_chosen(self):
         self.white_radio.setChecked(True)
- 
-    def play_go(self):
+
+    def player_go(self,channel):
         if True == self.is_pub:
-            try:
-                self.isExcuted, self.pc_do_step, self.pc_remove_step, self.win_side = go_client_srv("play",self.hukind,str(self.current_level))
-                print self.isExcuted, self.pc_do_step,  self.pc_remove_step,self.win_side
-            except Exception as e:
-                print e
+            if False == self.wait_for_excute:
+                try:
+                    self.isExcuted, self.pc_do_step, self.pc_remove_step, self.win_side = go_client_srv("play",self.hukind,str(self.current_level))
+                    print self.isExcuted, self.pc_do_step,  self.pc_remove_step, self.win_side
+                    self.wait_for_excute = True
+                except Exception as e:
+                    print e
         else:
-            res = QtWidgets.QMessageBox.warning(self,u'错误',u'请先选择颜色及难度并点击开始按钮',QtWidgets.QMessageBox.Ok)
+            rospy.logwarn('please firstly choose side and level, then click start button !')
+
+    def robot_go(self):
+        threadLock.acquire()
+        self.wait_for_excute = False
+        threadLock.release()
 
     def gui_close(self):
         self.close()

@@ -144,7 +144,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>我已落子</string>
+    <string>执行完毕</string>
    </property>
   </widget>
  </widget>

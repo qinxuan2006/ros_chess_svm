@@ -1,4 +1,4 @@
 <launch>
-    <node name="processNode" pkg="go_player" type="go.py" launch-prefix="gnome-terminal -e" output="screen"/>
+    <node name="processNode" pkg="go_player" type="go.py" output="screen"/>
     <node name="guiNode" pkg="go_player" type="gui.py" output="screen" required="true"/>
 </launch>

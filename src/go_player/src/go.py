@@ -20,9 +20,12 @@ cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH,640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT,360)
 cap.set(5,10) 
-for i in range(0,40):
+count =1
+for i in range(0,20):
     ret, img = cap.read() 
-    cv2.waitKey(10)  
+    cv2.waitKey(200)  
+    count +=1
+print count
 #---------------------------------------
 
 
@@ -79,11 +82,12 @@ class CaptureAndProcess():
         rospack = rospkg.RosPack()
         pkg_pth = rospack.get_path('go_player')
         self.projective_martix = np.loadtxt(pkg_pth +"/src/transformer.txt")
+        print self.projective_martix
         self.model_color = joblib.load(pkg_pth + "/src/model/train_model_color.m") 
         self.board = np.zeros((19,19),np.uint8)
-        self.bw = {'black':1,'white':2}
-        self.abw = {'black':-1,'white':-2}
-        rospy.sleep(1) 
+        self.bw = {'black':2,'white':1}
+        self.abw = {'black':-2,'white':-1}
+        rospy.sleep(0.2) 
 
 
 #   -----------------
@@ -102,7 +106,7 @@ class CaptureAndProcess():
         matrix = np.zeros((19,19),np.uint8)       
         proj = cv2.warpPerspective(src, self.projective_martix,(580,595))
         hsv = cv2.cvtColor(proj, cv2.COLOR_BGR2HSV)
-        gray_roi = cv2.cvtColor(proj, cv2.COLOR_BGR2GRAY) 
+        gray_roi = cv2.cvtColor(proj, cv2.COLOR_BGR2GRAY)
 
     #   ------board seperator--------
     #   ---x-range: 19~559,  y-range: 19~577-----     
@@ -111,8 +115,7 @@ class CaptureAndProcess():
                 center = (20+i*30,15+j*31)
                 box1 = hsv[(center[1]-15):(center[1]+15),(center[0]-15):(center[0]+15)]
                 box2 = gray_roi[(center[1]-15):(center[1]+15),(center[0]-15):(center[0]+15)]
-                box3 = th[(center[1]-15):(center[1]+15),(center[0]-15):(center[0]+15)]
-                matrix[i][j] = preDict(box1,box2,box3)
+                matrix[i][j] = self.preDict(box1,box2)
           
         return matrix
                 
@@ -122,11 +125,12 @@ class CaptureAndProcess():
         who = '--'
         ai_step = (-1,-1)
         remove_step = ()
-#        for i in range(0,10):
-#            ret, img = cap.read() 
-#            cv2.waitKey(10) 
-#            img_board = self.transfomer(img)  
-        img_board = np.zeros((19,19),np.int16)
+        for i in range(0,5):
+            ret, img = cap.read() 
+            cv2.waitKey(100) 
+            img_board = self.transfomer(img)  
+        print img_board
+
         if msg.state == 'new':   
             self.kind = msg.kind         
             if np.sum(img_board) != 0:
@@ -171,79 +175,8 @@ class CaptureAndProcess():
 
 
         return Player_orderResponse(isExcuted, ai_step, remove_step, who)
-#        cv2.imshow("board", drawBoard(self.board))
 
 
-
-#   ------------------------
-#   ------board display-------
-# displaying the board
-
-# make a blank board
-def blankBoard(boardBlockSize):
-    yellow = [75, 215, 255]
-    black = [0, 0, 0]
-    white = [255, 255, 255]
-    halfBoardBlock = int(round((boardBlockSize / 2.0)))
-    boardSide = boardBlockSize * boardSize
-    blankBoard = np.zeros((boardSide, boardSide, 3),
-                     dtype="uint8")
-    cv2.rectangle(blankBoard, (0, 0), (boardSide, boardSide), yellow, -1)
-    for i in range(boardSize):
-        spot = i * boardBlockSize + halfBoardBlock
-        cv2.line(blankBoard,
-                 (spot, halfBoardBlock),
-                 (spot, boardSide - halfBoardBlock),
-                 black,
-                 boardBlockSize / 10)
-        cv2.line(blankBoard,
-                 (halfBoardBlock, spot),
-                 (boardSide - halfBoardBlock, spot),
-                 black,
-                 boardBlockSize / 10)
-    if boardSize == 19:
-        spots = [[3, 3], [9, 3], [15, 3],
-                 [3, 9], [9, 9], [15, 9],
-                 [3, 15], [9, 15], [15, 15]]
-    else:
-        spots = []
-
-    for s in spots:
-        cv2.circle(blankBoard,
-                   (s[0] * boardBlockSize + halfBoardBlock,
-                    s[1] * boardBlockSize + halfBoardBlock),
-                   int(boardBlockSize * .15),
-                   black,
-                   -1)
-
-    return blankBoard
-
-def drawBoard(board, size=(500, 500)):
-    black = [0, 0, 0]
-    white = [255, 255, 255]
-    
-    boardBlockSize = 100
-    halfBoardBlock = int(round(boardBlockSize / 2.0))
-    output =  blankBoard(100)
-    (w, h) = board.shape
-    for x in range(w):
-        for y in range(h):
-            if board[x][y] == 1:
-                cv2.circle(output,
-                           ((x * boardBlockSize) + halfBoardBlock,
-                            (y * boardBlockSize) + halfBoardBlock),
-                           boardBlockSize / 2,
-                           black,
-                           -1)
-            elif board[x][y] == 2:
-                cv2.circle(output,
-                           ((x * boardBlockSize) + halfBoardBlock,
-                            (y * boardBlockSize) + halfBoardBlock),
-                           boardBlockSize / 2,
-                           white,
-                           -1)
-    output = cv2.resize(output, size, output, 0, 0, cv2.INTER_AREA)
-    return output
 
 
 if __name__ == '__main__':
