@@ -20,7 +20,7 @@ class ArduinoProcess():
         self.arduino_pre = rospy.Subscriber('/go/arduinoPre', String, self.precallback)
         self.arduino_command = rospy.Service("/go/arduino", Arduino_order, self.handle_order_func)
         self._isPrepared=threading.Event()  
-        serialPort = "/dev/ttyUSB1"  # 串口
+        serialPort = "/dev/arduino"  # 串口
         baudRate = 9600  # 波特率
         self.ser = serial.Serial(serialPort, baudRate, timeout=1)
         print("参数设置：串口=%s ，波特率=%d" % (serialPort, baudRate))
@@ -36,7 +36,8 @@ class ArduinoProcess():
                 while True:
                     try:
                         str1 = self.ser.readline().replace('\r\n','')
-                        print str1,len(str1) 
+                        if len(str1)>0:
+                        	print str1,len(str1) 
                         if 'done' == str1:
                             rospy.sleep(0.2)
                             isExcuted = True 
@@ -61,7 +62,8 @@ class ArduinoProcess():
         while True:
             try:
                 str1 = self.ser.readline().replace('\r\n','')
-                print str1,len(str1) 
+                if len(str1)>0:
+                	print str1,len(str1) 
                 if 'done' == str1:
                     isExcuted = True  
                     break

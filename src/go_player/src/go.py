@@ -139,11 +139,11 @@ class CaptureAndProcess():
 
 
         elif msg.state == 'play':
-    #        for i in range(0,5):
-    #            ret, img = cap.read() 
-    #            cv2.waitKey(100) 
-    #            img_board = self.transfomer(img)  
-    #        print img_board
+            for i in range(0,5):
+                ret, img = cap.read() 
+                cv2.waitKey(100) 
+                img_board = self.transfomer(img)  
+            print img_board
             change_board = img_board-self.board
             diff_step = np.argwhere(change_board == self.bw[self.kind])
             rospy.loginfo((diff_step,len(diff_step)))

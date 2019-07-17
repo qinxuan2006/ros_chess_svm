@@ -4,12 +4,15 @@
 import os, sys
 import rospy
 import rospkg
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import threading
+import time
 from std_msgs.msg import String
 from python_qt_binding import loadUi
 from PyQt5 import QtCore, QtGui, QtWidgets
 from go_player.srv import *
+
+_isExcuted=threading.Event()
 
 
 
@@ -33,6 +36,10 @@ def arduino_client_srv(m,p):
     except rospy.ServiceException, e:  
         print "Service call failed: %s"%e 
 
+def button_go(channel):
+    rospy.sleep(0.5)
+    _isExcuted.set()
+
 
 class pyGui(QtWidgets.QWidget):
     def __init__(self):
@@ -43,10 +50,10 @@ class pyGui(QtWidgets.QWidget):
         loadUi(ui_file, self)
         rospy.init_node('py_gui')
 
-#        pin = 11
-#        GPIO.setmode(GPIO.BOARD)
-#        GPIO.setup(pin,GPIO.IN)
-#        GPIO.add_event_detect(pin,GPIO.FALLING,callback = self.player_go,bouncetime = 200)
+        pin = 11
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(pin,GPIO.IN)
+        GPIO.add_event_detect(pin,GPIO.FALLING,callback = button_go,bouncetime = 500)
 
         self.arduinoPre = rospy.Publisher('/go/arduinoPre', String , queue_size=10)       
 
@@ -55,7 +62,6 @@ class pyGui(QtWidgets.QWidget):
         self.level_label.setText(u'AI级别: ' + str(self.current_level))
         self.start_button.pressed.connect(self.publish_start)
         self.quit_button.pressed.connect(self.gui_close)
-        self.play_button.pressed.connect(self.player_go)
         self.level_slider.valueChanged.connect(self.change_level)
         self.black_radio.clicked.connect(self.black_chosen)
         self.white_radio.clicked.connect(self.white_chosen)
@@ -78,11 +84,13 @@ class pyGui(QtWidgets.QWidget):
                 if not (-1,-1) == self.pc_do_step:
                     robotExcuted = arduino_client_srv("place",self.pc_do_step)
                 self.start_button.setEnabled(False)
-                self.is_pub = True
-                    
+                self.is_pub = True                   
         except Exception as e:
             res = QtWidgets.QMessageBox.warning(self,u'错误',u'请正先选择颜色及难度',QtWidgets.QMessageBox.Ok)
             print e
+        if True == self.is_pub:
+            while not rospy.is_shutdown():
+                self.player_go() 
  
     def change_level(self, value):
         self.current_level = value
@@ -95,23 +103,19 @@ class pyGui(QtWidgets.QWidget):
         self.white_radio.setChecked(True)
 
     def player_go(self):
-        self.play_button.setEnabled(False)
-        if True == self.is_pub:
-            self.arduinoPre.publish(String('prepare'))
-            try:
-                self.isExcuted, self.pc_do_step, self.pc_remove_step, self.win_side = go_client_srv("play",self.hukind,str(self.current_level))
-                print self.isExcuted, self.pc_do_step,  self.pc_remove_step, self.win_side
-                if not (-1,-1) == self.pc_do_step:
-                    robotExcuted = arduino_client_srv("place",self.pc_do_step)
-                if not () == self.pc_remove_step:
-                    robotExcuted = arduino_client_srv('remove',self.pc_remove_step) 
-               
-            except Exception as e:
-                print e
-        else:
-            rospy.logwarn('please firstly choose side and level, then click start button !')
-            rospy.sleep(1)
-        self.play_button.setEnabled(True)
+        _isExcuted.wait()
+        self.arduinoPre.publish(String('prepare'))
+        try:
+            self.isExcuted, self.pc_do_step, self.pc_remove_step, self.win_side = go_client_srv("play",self.hukind,str(self.current_level))
+            print self.isExcuted, self.pc_do_step,  self.pc_remove_step, self.win_side
+            if not (-1,-1) == self.pc_do_step:
+                robotExcuted = arduino_client_srv("place",self.pc_do_step)
+            if not () == self.pc_remove_step:
+                robotExcuted = arduino_client_srv('remove',self.pc_remove_step) 
+           
+        except Exception as e:
+            print e
+        _isExcuted.clear()
 
 
 
@@ -120,10 +124,13 @@ class pyGui(QtWidgets.QWidget):
  
  
 def main():
-    app=QtWidgets.QApplication(sys.argv)
-    pyShow = pyGui()
-    pyShow.show()
-    sys.exit(app.exec_())
+    try:
+        app=QtWidgets.QApplication(sys.argv)
+        pyShow = pyGui()
+        pyShow.show()
+        sys.exit(app.exec_())
+    except Exception as e:
+        print e
  
  
 if __name__ == "__main__":

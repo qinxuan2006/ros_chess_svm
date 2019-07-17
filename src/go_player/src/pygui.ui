@@ -30,9 +30,9 @@
    <property name="geometry">
     <rect>
      <x>90</x>
-     <y>270</y>
-     <width>121</width>
-     <height>31</height>
+     <y>250</y>
+     <width>151</width>
+     <height>51</height>
     </rect>
    </property>
    <property name="text">
@@ -42,10 +42,10 @@
   <widget class="QPushButton" name="quit_button">
    <property name="geometry">
     <rect>
-     <x>450</x>
-     <y>270</y>
-     <width>111</width>
-     <height>31</height>
+     <x>410</x>
+     <y>250</y>
+     <width>151</width>
+     <height>51</height>
     </rect>
    </property>
    <property name="text">
@@ -124,27 +124,14 @@
   <widget class="QLabel" name="color_label">
    <property name="geometry">
     <rect>
-     <x>140</x>
+     <x>127</x>
      <y>90</y>
-     <width>68</width>
-     <height>17</height>
+     <width>81</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
     <string>棋手方</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="play_button">
-   <property name="geometry">
-    <rect>
-     <x>260</x>
-     <y>200</y>
-     <width>99</width>
-     <height>27</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>执行完毕</string>
    </property>
   </widget>
  </widget>
