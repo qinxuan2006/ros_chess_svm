@@ -1,0 +1,19 @@
+[Desktop Entry]
+Name=MATE Terminal
+Name[zh_CN]=goMaster
+GenericName=Terminal
+GenericName[zh_CN]=终端
+Comment=Use the command line
+Comment[zh_CN]=使用命令行
+TryExec=mate-terminal
+Exec=mate-terminal -x /home/gomaster/ros_chess_svm/src/go_player/src/start.sh
+Icon=/home/gomaster/ros_chess_svm/src/go_player/src/logo.jpeg
+Type=Application
+X-MATE-DocPath=mate-terminal/index.html
+X-MATE-Bugzilla-Bugzilla=MATE
+X-MATE-Bugzilla-Product=mate-terminal
+X-MATE-Bugzilla-Component=BugBuddyBugs
+X-MATE-Bugzilla-Version=1.16.2
+Categories=System;GTK;Utility;TerminalEmulator;
+StartupNotify=true
+Keywords=MATE;terminal;shell;prompt;command;commandline;

@@ -19,10 +19,15 @@ class ArduinoProcess():
         rospy.loginfo('started')
         self.arduino_pre = rospy.Subscriber('/go/arduinoPre', String, self.precallback)
         self.arduino_command = rospy.Service("/go/arduino", Arduino_order, self.handle_order_func)
-        self._isPrepared=threading.Event()  
-        serialPort = "/dev/arduino"  # 串口
-        baudRate = 9600  # 波特率
-        self.ser = serial.Serial(serialPort, baudRate, timeout=1)
+        self._isPrepared=threading.Event() 
+        try: 
+            serialPort = "/dev/ttyUSB0"  # 串口
+            baudRate = 9600  # 波特率
+            self.ser = serial.Serial(serialPort, baudRate, timeout=1)
+        except:
+            serialPort = "/dev/ttyUSB1"  # 串口
+            baudRate = 9600  # 波特率
+            self.ser = serial.Serial(serialPort, baudRate, timeout=1)
         print("参数设置：串口=%s ，波特率=%d" % (serialPort, baudRate))
         rospy.sleep(0.2) 
 

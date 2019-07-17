@@ -17,8 +17,8 @@
    <property name="geometry">
     <rect>
      <x>193</x>
-     <y>190</y>
-     <width>91</width>
+     <y>220</y>
+     <width>121</width>
      <height>17</height>
     </rect>
    </property>
@@ -38,7 +38,7 @@
   <widget class="QPushButton" name="start_button">
    <property name="geometry">
     <rect>
-     <x>140</x>
+     <x>190</x>
      <y>330</y>
      <width>151</width>
      <height>51</height>
@@ -76,11 +76,19 @@
   <widget class="QSlider" name="level_slider">
    <property name="geometry">
     <rect>
-     <x>319</x>
-     <y>180</y>
+     <x>360</x>
+     <y>160</y>
      <width>231</width>
-     <height>51</height>
+     <height>140</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
+   <property name="cursor">
+    <cursorShape>ArrowCursor</cursorShape>
    </property>
    <property name="mouseTracking">
     <bool>false</bool>
@@ -110,7 +118,7 @@
     <bool>false</bool>
    </property>
    <property name="tickPosition">
-    <enum>QSlider::TicksBothSides</enum>
+    <enum>QSlider::NoTicks</enum>
    </property>
    <property name="tickInterval">
     <number>1</number>
@@ -119,8 +127,8 @@
   <widget class="QRadioButton" name="black_radio">
    <property name="geometry">
     <rect>
-     <x>320</x>
-     <y>90</y>
+     <x>360</x>
+     <y>120</y>
      <width>121</width>
      <height>31</height>
     </rect>
@@ -138,8 +146,8 @@
   <widget class="QRadioButton" name="white_radio">
    <property name="geometry">
     <rect>
-     <x>500</x>
-     <y>90</y>
+     <x>540</x>
+     <y>120</y>
      <width>121</width>
      <height>31</height>
     </rect>
@@ -158,7 +166,7 @@
    <property name="geometry">
     <rect>
      <x>190</x>
-     <y>90</y>
+     <y>120</y>
      <width>81</width>
      <height>31</height>
     </rect>
