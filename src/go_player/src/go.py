@@ -82,7 +82,6 @@ class CaptureAndProcess():
         rospack = rospkg.RosPack()
         pkg_pth = rospack.get_path('go_player')
         self.projective_martix = np.loadtxt(pkg_pth +"/src/transformer.txt")
-        print self.projective_martix
         self.model_color = joblib.load(pkg_pth + "/src/model/train_model_color.m") 
         self.board = np.zeros((19,19),np.uint8)
         self.bw = {'black':2,'white':1}
@@ -125,33 +124,39 @@ class CaptureAndProcess():
         who = '--'
         ai_step = (-1,-1)
         remove_step = ()
-        for i in range(0,5):
-            ret, img = cap.read() 
-            cv2.waitKey(100) 
-            img_board = self.transfomer(img)  
-        print img_board
+        img_board = np.zeros((19,19),np.int16)
 
         if msg.state == 'new':   
             self.kind = msg.kind         
-            if np.sum(img_board) != 0:
-                rospy.logwarn('please clear the real board') 
-            else:
-                self.ai = gp.play_ai(msg.kind,msg.level)
-                ai_step, gnu_board = self.ai.gogogo((-1,-1))
-                self.board = gnu_board
+#            if np.sum(img_board) != 0:
+#                rospy.logwarn('please clear the board') 
+#            else:
+            self.ai = gp.play_ai(msg.kind,msg.level)
+            ai_step, gnu_board = self.ai.gogogo((-1,-1))
+            self.board = gnu_board
             isExcuted = True
+     
 
 
         elif msg.state == 'play':
+    #        for i in range(0,5):
+    #            ret, img = cap.read() 
+    #            cv2.waitKey(100) 
+    #            img_board = self.transfomer(img)  
+    #        print img_board
             change_board = img_board-self.board
             diff_step = np.argwhere(change_board == self.bw[self.kind])
             rospy.loginfo((diff_step,len(diff_step)))
             if len(diff_step) != 1:
                 player_step = (input("please input the true step index 1: "),input("please input the true step index 2: "))
+                if player_step == (-1,-1):
+                    return Player_orderResponse(isExcuted, ai_step, remove_step, who)
             else:            
                 player_step = tuple(diff_step[0])
                 self.board[player_step[0]][player_step[1]] = self.bw[self.kind]
             ai_step, gnu_board = self.ai.gogogo(player_step)
+
+
             if ai_step == (-1,-1):
                 if self.board == 'B' or self.board == 'W':
                     rospy.loginfo('finished! %s wins', self.board)
@@ -161,7 +166,8 @@ class CaptureAndProcess():
                     return Player_orderResponse(isExcuted, ai_step, remove_step, who) 
             else:
                 change_board = gnu_board-self.board
-                remove_step = np.argwhere(change_board == self.abw[self.kind])
+                temp = np.argwhere(change_board == self.abw[self.kind])
+                remove_step = tuple(temp.reshape(-1))
                 self.board = gnu_board
 
             isExcuted = True        
@@ -180,5 +186,5 @@ class CaptureAndProcess():
 
 
 if __name__ == '__main__':
-    chess_rec = CaptureAndProcess()
+    CaptureAndProcess()
     rospy.spin()

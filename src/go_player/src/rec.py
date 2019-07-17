@@ -6,6 +6,7 @@ import numpy as np
 import time
 import roslib
 import rospy
+import rospkg
 # -----------------------鼠标操作相关------------------------------------------
 lsPointsChoose = []
 tpPointsChoose = []
@@ -76,12 +77,13 @@ def persepective(image):
      
     projective_image = cv2.warpPerspective(image,
                                            projective_martix,(cols,rows))
-     
+    rospack = rospkg.RosPack()
+    pkg_pth = rospack.get_path('go_player') 
     cv2.imshow('Projective Image',projective_image)  
-    cv2.imwrite('rec.jpg', projective_image)   
+    cv2.imwrite(pkg_pth+'/src/rec.jpg', projective_image)   
     cv2.waitKey()
     print projective_martix
-    np.savetxt("transformer.txt", projective_martix) # 缺省按照'%.18e'格式保存数据，以空格分隔 
+    np.savetxt(pkg_pth+"/src/transformer.txt", projective_martix) # 缺省按照'%.18e'格式保存数据，以空格分隔 
     return projective_image
 
 def optPoint(img,point,offset_num):

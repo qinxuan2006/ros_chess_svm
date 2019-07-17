@@ -1,0 +1,6 @@
+#input
+string state
+int8[] step
+---
+# output
+bool success

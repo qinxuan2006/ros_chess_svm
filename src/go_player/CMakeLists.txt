@@ -48,12 +48,13 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
- add_message_files(
-   FILES
-   player_command.msg
+# add_message_files(
+#   FILES
+#   arduino_command.msg
 #   Message1.msg
 #   Message2.msg
- )
+
+# )
 
 ## Generate services in the 'srv' folder
  add_service_files(
@@ -61,6 +62,7 @@ find_package(catkin REQUIRED COMPONENTS
 #   Service1.srv
 #   Service2.srv
    Player_order.srv
+   Arduino_order.srv
  )
 
 ## Generate actions in the 'action' folder

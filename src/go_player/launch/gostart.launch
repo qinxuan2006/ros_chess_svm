@@ -1,4 +1,5 @@
 <launch>
     <node name="processNode" pkg="go_player" type="go.py" output="screen"/>
     <node name="guiNode" pkg="go_player" type="gui.py" output="screen" required="true"/>
+    <node name="arduinoNode" pkg="go_player" type="arduino.py" launch-prefix="gnome-terminal -e"/>
 </launch>

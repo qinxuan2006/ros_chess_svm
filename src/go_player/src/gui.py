@@ -4,14 +4,14 @@
 import os, sys
 import rospy
 import rospkg
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 import threading
 from std_msgs.msg import String
 from python_qt_binding import loadUi
 from PyQt5 import QtCore, QtGui, QtWidgets
 from go_player.srv import *
 
-threadLock = threading.Lock()
+
 
 
 
@@ -21,6 +21,15 @@ def go_client_srv(m,p,n):
         go_client = rospy.ServiceProxy("/go/command",Player_order)       
         resp = go_client(m,p,n) 
         return resp.success, resp.do_step, resp.remove_step, resp.win_side
+    except rospy.ServiceException, e:  
+        print "Service call failed: %s"%e 
+
+def arduino_client_srv(m,p):  
+    rospy.wait_for_service("/go/arduino")    
+    try:  
+        arduino_client = rospy.ServiceProxy("/go/arduino",Arduino_order)       
+        resp = arduino_client(m,p) 
+        return resp.success
     except rospy.ServiceException, e:  
         print "Service call failed: %s"%e 
 
@@ -34,21 +43,23 @@ class pyGui(QtWidgets.QWidget):
         loadUi(ui_file, self)
         rospy.init_node('py_gui')
 
-        self.wait_for_excute = False
-        pin = 11
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(pin,GPIO.IN)
-        GPIO.add_event_detect(pin,GPIO.FALLING,callback = self.player_go,bouncetime = 200)
+#        pin = 11
+#        GPIO.setmode(GPIO.BOARD)
+#        GPIO.setup(pin,GPIO.IN)
+#        GPIO.add_event_detect(pin,GPIO.FALLING,callback = self.player_go,bouncetime = 200)
+
+        self.arduinoPre = rospy.Publisher('/go/arduinoPre', String , queue_size=10)       
 
         self.is_pub = False
         self.current_level = self.level_slider.value()
         self.level_label.setText(u'AI级别: ' + str(self.current_level))
         self.start_button.pressed.connect(self.publish_start)
         self.quit_button.pressed.connect(self.gui_close)
-        self.play_button.pressed.connect(self.robot_go)
+        self.play_button.pressed.connect(self.player_go)
         self.level_slider.valueChanged.connect(self.change_level)
         self.black_radio.clicked.connect(self.black_chosen)
         self.white_radio.clicked.connect(self.white_chosen)
+        rospy.sleep(0.5)
 
         
  
@@ -59,11 +70,16 @@ class pyGui(QtWidgets.QWidget):
         elif self.white_radio.isChecked():
             self.hukind = 'white'
             self.kind = 'black'
+        self.arduinoPre.publish(String('prepare')) 
         try:
             self.isExcuted, self.pc_do_step, self.pc_remove_step, self.win_side = go_client_srv("new",self.kind,str(self.current_level))
-            print self.isExcuted, self.pc_do_step,  self.pc_remove_step,self.win_side
-            self.start_button.setEnabled(False)
-            self.is_pub = True
+            print self.isExcuted, self.pc_do_step, self.pc_remove_step,self.win_side
+            if True == self.isExcuted:
+                if not (-1,-1) == self.pc_do_step:
+                    robotExcuted = arduino_client_srv("place",self.pc_do_step)
+                self.start_button.setEnabled(False)
+                self.is_pub = True
+                    
         except Exception as e:
             res = QtWidgets.QMessageBox.warning(self,u'错误',u'请正先选择颜色及难度',QtWidgets.QMessageBox.Ok)
             print e
@@ -78,22 +94,26 @@ class pyGui(QtWidgets.QWidget):
     def white_chosen(self):
         self.white_radio.setChecked(True)
 
-    def player_go(self,channel):
+    def player_go(self):
+        self.play_button.setEnabled(False)
         if True == self.is_pub:
-            if False == self.wait_for_excute:
-                try:
-                    self.isExcuted, self.pc_do_step, self.pc_remove_step, self.win_side = go_client_srv("play",self.hukind,str(self.current_level))
-                    print self.isExcuted, self.pc_do_step,  self.pc_remove_step, self.win_side
-                    self.wait_for_excute = True
-                except Exception as e:
-                    print e
+            self.arduinoPre.publish(String('prepare'))
+            try:
+                self.isExcuted, self.pc_do_step, self.pc_remove_step, self.win_side = go_client_srv("play",self.hukind,str(self.current_level))
+                print self.isExcuted, self.pc_do_step,  self.pc_remove_step, self.win_side
+                if not (-1,-1) == self.pc_do_step:
+                    robotExcuted = arduino_client_srv("place",self.pc_do_step)
+                if not () == self.pc_remove_step:
+                    robotExcuted = arduino_client_srv('remove',self.pc_remove_step) 
+               
+            except Exception as e:
+                print e
         else:
             rospy.logwarn('please firstly choose side and level, then click start button !')
+            rospy.sleep(1)
+        self.play_button.setEnabled(True)
 
-    def robot_go(self):
-        threadLock.acquire()
-        self.wait_for_excute = False
-        threadLock.release()
+
 
     def gui_close(self):
         self.close()
