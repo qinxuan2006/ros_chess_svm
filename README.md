@@ -1,5 +1,9 @@
 # ros_chess_svm
-a team program of a robot which can automatically play chess with people
+a team project of a robot which can automatically play chess with people
+programme is built on Raspberry and communicate with arduino
 
 # how to use this repo
+The goAi depends on GnuGo, you should install it by 
+$ sudo apt-get install gnugo
+
 cd this package, then catkin_make by ros
