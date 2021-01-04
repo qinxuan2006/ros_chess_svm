@@ -10,4 +10,4 @@ cd this package, then catkin_make by ros
 
 # Recognition
 
-![demo.png](src\go_player\src\demo.png)
+![demo.png](https://github.com/qinxuan2006/ros_chess_svm/blob/master/src/go_player/src/demo.png)
