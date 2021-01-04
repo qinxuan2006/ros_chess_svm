@@ -7,3 +7,7 @@ The goAi depends on GnuGo, you should install it by
 $ sudo apt-get install gnugo
 
 cd this package, then catkin_make by ros
+
+# Recognition
+
+![demo.png](src\go_player\src\demo.png)
